@@ -10,6 +10,11 @@ class Particle {
 		this.vel = 0.01 / vel;
     this.radians = Math.random()*Math.PI*2;
 		this.alpha = 1;
+		this.planetColorDefault = "rgba(255,255,255,"+this.alpha+")";
+		this.planetColorMouseOver = "red";
+		this.planetColor = this.planetColorDefault;
+		this.name = name;
+		this.showInfo = false;
 	}
 	update(){
 		// If sun draw
@@ -43,11 +48,32 @@ class Particle {
 	drawPlanet(){
     c.beginPath();
     c.arc(this.x,this.y,this.radius,0,Math.PI * 2,false);
-    c.strokeStyle = "rgba(255,255,255,"+this.alpha+")";
+    c.strokeStyle = this.planetColor;
     c.stroke();
     c.fillStyle = "black";
     c.fill();
     c.closePath();
+		if (this.showInfo) {
+			this.drawInfo();
+		}
+	}
+	drawInfo(){
+		c.beginPath();
+		c.fillStyle = "white";
+		c.fillText(this.name,this.x,this.y);
+		c.closePath();
+	}
+	checkMouseHit(mouseX,mouseY){
+		if (mouseX>(this.x-10-this.radius) && mouseX<(this.x+10+this.radius)) {
+			if (mouseY>(this.y-10-this.radius) && mouseY<(this.y+10+this.radius)) {
+				this.planetColor = this.planetColorMouseOver;
+				this.showInfo = true;
+			}
+		}
+		else{
+			this.planetColor = this.planetColorDefault;
+			this.showInfo = false;
+		}
 	}
 }
 
@@ -56,6 +82,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 var c = canvas.getContext('2d');
 var particles = [];
+document.addEventListener("mousemove", onMouseMove);
+//canvas.style.cursor = "crosshair";
 init();
 
 function init(){
@@ -73,12 +101,20 @@ function init(){
 	update();
 }
 function update(){
-	c.fillStyle = 'rgba(0,0,0,0.2)';
-	c.fillRect(0,0,innerWidth,innerHeight);
-	c.closePath();
+	//c.fillStyle = 'rgba(0,0,0,0.2)';
+	//c.fillRect(0,0,innerWidth,innerHeight);
+	//c.closePath();
+	c.clearRect(0,0,window.innerWidth,window.innerHeight);
 	for (var i = 0; i < particles.length; i++){
 		p = particles[i];
 		p.update();
 	}
 	requestAnimationFrame(update);
+}
+function onMouseMove(e) {
+	mouseX = e.clientX;
+	mouseY = e.clientY;
+	for (var i = 0; i < particles.length; i++) {
+		particles[i].checkMouseHit(mouseX,mouseY);
+	}
 }
