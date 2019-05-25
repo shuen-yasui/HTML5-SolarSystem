@@ -8,7 +8,7 @@ class Particle {
 		this.radius = r;
     this.pathRadius = path;
 		this.vel = 0.01 / vel;
-    this.radians = 0;
+    this.radians = Math.random()*Math.PI*2;
 		this.alpha = 1;
 	}
 	update(){
@@ -59,16 +59,17 @@ var particles = [];
 init();
 
 function init(){
+	var orbitRadiusScale = (window.innerWidth*0.9)/18;
   particles.push(new Particle("Sun",0,20,0));
-  particles.push(new Particle("Mercury",100,10,0.2));
-  particles.push(new Particle("Venus",150,10,0.6));
-  particles.push(new Particle("Earth",200,10,1));
-  particles.push(new Particle("Mars",250,10,1.9));
-  particles.push(new Particle("Jupiter",300,10,11.9));
-  particles.push(new Particle("Saturn",350,10,29.5));
-  particles.push(new Particle("Uranus",400,10,84));
-  particles.push(new Particle("Neptune",450,10,164.8));
-  particles.push(new Particle("Pluto",500,10,248));
+  particles.push(new Particle("Mercury",orbitRadiusScale,3,0.2));
+  particles.push(new Particle("Venus",2*orbitRadiusScale,4,0.6));
+  particles.push(new Particle("Earth",3*orbitRadiusScale,5,1));
+  particles.push(new Particle("Mars",4*orbitRadiusScale,5,1.9));
+  particles.push(new Particle("Jupiter",5*orbitRadiusScale,15,11.9));
+  particles.push(new Particle("Saturn",6*orbitRadiusScale,10,29.5));
+  particles.push(new Particle("Uranus",7*orbitRadiusScale,7,84));
+  particles.push(new Particle("Neptune",8*orbitRadiusScale,6,164.8));
+  particles.push(new Particle("Pluto",9*orbitRadiusScale,2,248));
 	update();
 }
 function update(){
