@@ -1,14 +1,13 @@
 class Particle {
-	constructor(name,path,r,vel){
+	constructor(name,path,r,v){
 		this.centerX = window.innerWidth/2;
 		this.centerY = window.innerHeight/2;
 		this.x;
 		this.y;
-		this.couple;
 		this.radius = r;
     this.pathRadius = path;
-		this.vel = 0.01 / vel;
-    this.radians = Math.random()*Math.PI*2;
+		this.velocity = 0.01 / v;
+    this.posInRadians = Math.random()*Math.PI*2;
 		this.alpha = 1;
 		this.planetColorDefault = "rgba(255,255,255,"+this.alpha+")";
 		this.planetColorMouseOver = "red";
@@ -17,7 +16,7 @@ class Particle {
 		this.showInfo = false;
 	}
 	update(){
-		// If sun draw
+		// If sun
 		if (this.pathRadius == 0){
 			this.x = this.centerX;
 			this.y = this.centerY;
@@ -25,9 +24,9 @@ class Particle {
 			return
 		}
 		// Update Positions
-		this.radians += this.vel;
-		this.x = this.centerX + (this.pathRadius * (Math.cos(this.radians)));
-		this.y = this.centerY + (this.pathRadius * (Math.sin(this.radians)) * .2);
+		this.posInRadians += this.velocity;
+		this.x = this.centerX + (this.pathRadius * (Math.cos(this.posInRadians)));
+		this.y = this.centerY + (this.pathRadius * (Math.sin(this.posInRadians)) * .2);
     // Draw Path
     var pRadi = 0
     var pX = 0
@@ -58,17 +57,18 @@ class Particle {
 		}
 	}
 	drawInfo(){
+		var textY = this.y - this.radius - 10;
 		c.beginPath();
 		c.fillStyle = "white";
-		c.fillText(this.name,this.x,this.y);
+		c.textAlign = "center";
+		c.font = "12px Helvetica";
+		c.fillText(this.name,this.x,textY);
 		c.closePath();
 	}
 	checkMouseHit(mouseX,mouseY){
-		if (mouseX>(this.x-10-this.radius) && mouseX<(this.x+10+this.radius)) {
-			if (mouseY>(this.y-10-this.radius) && mouseY<(this.y+10+this.radius)) {
-				this.planetColor = this.planetColorMouseOver;
-				this.showInfo = true;
-			}
+		if (mouseX>(this.x-10-this.radius) && mouseX<(this.x+10+this.radius) && mouseY>(this.y-10-this.radius) && mouseY<(this.y+10+this.radius)) {
+			this.planetColor = this.planetColorMouseOver;
+			this.showInfo = true;
 		}
 		else{
 			this.planetColor = this.planetColorDefault;
@@ -76,45 +76,47 @@ class Particle {
 		}
 	}
 }
-
-var canvas = document.querySelector('canvas');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-var c = canvas.getContext('2d');
-var particles = [];
-document.addEventListener("mousemove", onMouseMove);
-//canvas.style.cursor = "crosshair";
-init();
-
 function init(){
 	var orbitRadiusScale = (window.innerWidth*0.9)/18;
-  particles.push(new Particle("Sun",0,20,0));
-  particles.push(new Particle("Mercury",orbitRadiusScale,3,0.2));
-  particles.push(new Particle("Venus",2*orbitRadiusScale,4,0.6));
-  particles.push(new Particle("Earth",3*orbitRadiusScale,5,1));
-  particles.push(new Particle("Mars",4*orbitRadiusScale,5,1.9));
-  particles.push(new Particle("Jupiter",5*orbitRadiusScale,15,11.9));
-  particles.push(new Particle("Saturn",6*orbitRadiusScale,10,29.5));
-  particles.push(new Particle("Uranus",7*orbitRadiusScale,7,84));
-  particles.push(new Particle("Neptune",8*orbitRadiusScale,6,164.8));
-  particles.push(new Particle("Pluto",9*orbitRadiusScale,2,248));
+  planets.push(new Particle("Sun",0,20,0));
+  planets.push(new Particle("Mercury",orbitRadiusScale,3,0.2));
+  planets.push(new Particle("Venus",2*orbitRadiusScale,4,0.6));
+  planets.push(new Particle("Earth",3*orbitRadiusScale,5,1));
+  planets.push(new Particle("Mars",4*orbitRadiusScale,5,1.9));
+  planets.push(new Particle("Jupiter",5*orbitRadiusScale,15,11.9));
+  planets.push(new Particle("Saturn",6*orbitRadiusScale,10,29.5));
+  planets.push(new Particle("Uranus",7*orbitRadiusScale,7,84));
+  planets.push(new Particle("Neptune",8*orbitRadiusScale,6,164.8));
+  planets.push(new Particle("Pluto",9*orbitRadiusScale,2,248));
 	update();
 }
 function update(){
-	//c.fillStyle = 'rgba(0,0,0,0.2)';
-	//c.fillRect(0,0,innerWidth,innerHeight);
-	//c.closePath();
 	c.clearRect(0,0,window.innerWidth,window.innerHeight);
-	for (var i = 0; i < particles.length; i++){
-		p = particles[i];
+	for (var i = 0; i < planets.length; i++){
+		p = planets[i];
 		p.update();
 	}
+	// footer
+	var footer = "By: Shuen Yasui";
+	c.beginPath();
+	c.fillStyle = "rgb(50,50,50)";
+	c.textAlign = "right";
+	c.font = "12px Helvetica";
+	c.fillText(footer,window.innerWidth*0.95,window.innerHeight*0.75);
+	c.closePath();
 	requestAnimationFrame(update);
 }
 function onMouseMove(e) {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
-	for (var i = 0; i < particles.length; i++) {
-		particles[i].checkMouseHit(mouseX,mouseY);
+	for (var i = 0; i < planets.length; i++) {
+		planets[i].checkMouseHit(mouseX,mouseY);
 	}
 }
+var canvas = document.querySelector('canvas');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+var c = canvas.getContext('2d');
+var planets = [];
+document.addEventListener("mousemove", onMouseMove);
+init();
